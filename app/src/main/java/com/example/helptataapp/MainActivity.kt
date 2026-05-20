@@ -15,12 +15,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.helptataapp.navegation.ApellidoScreen
+import com.example.helptataapp.navegation.ApellidoMScreen
+import com.example.helptataapp.navegation.ApellidoPScreen
 import com.example.helptataapp.navegation.DvRunScreen
 import com.example.helptataapp.navegation.FechaScreen
-import com.example.helptataapp.navegation.NombreScreen
+import com.example.helptataapp.navegation.PNombreScreen
 import com.example.helptataapp.navegation.PasswordScreen
 import com.example.helptataapp.navegation.RunScreen
+import com.example.helptataapp.navegation.SNombreScreen
 import com.example.helptataapp.navegation.TelefonoScreen
 import com.example.helptataapp.ui.theme.HelpTataAppTheme
 import com.example.helptataapp.viewmodel.RegisterViewModel
@@ -71,18 +73,38 @@ class MainActivity : ComponentActivity() {
 
                 }
 
-                composable("nombre") {
+                composable("pnombre") {
 
-                    NombreScreen(
+                    PNombreScreen(
                         navController,
                         viewModel
                     )
 
                 }
 
-                composable("apellido") {
 
-                    ApellidoScreen(
+                composable("snombre") {
+
+                    SNombreScreen(
+                        navController,
+                        viewModel
+                    )
+
+                }
+
+                composable("apellidop") {
+
+                    ApellidoPScreen(
+                        navController,
+                        viewModel
+                    )
+
+                }
+
+
+                composable("apellidom") {
+
+                    ApellidoMScreen(
                         navController,
                         viewModel
                     )

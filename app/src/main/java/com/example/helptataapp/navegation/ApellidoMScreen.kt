@@ -19,7 +19,7 @@ import com.example.helptataapp.viewmodel.RegisterViewModel
 
 
 @Composable
-fun ApellidoScreen(
+fun ApellidoMScreen(
 
     navController: NavController,
     viewModel: RegisterViewModel
@@ -39,7 +39,7 @@ fun ApellidoScreen(
 
         Text(
 
-            text = "Ingrese su apellido",
+            text = "Ingrese su apellido materno",
 
             style =
                 MaterialTheme
@@ -56,13 +56,13 @@ fun ApellidoScreen(
 
             value =
                 viewModel
-                    .papellido_usuario
+                    .sapellido_usuario
                     .value,
 
             onValueChange = {
 
                 viewModel
-                    .papellido_usuario
+                    .sapellido_usuario
                     .value = it
 
             },

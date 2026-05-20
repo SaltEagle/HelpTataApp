@@ -18,7 +18,7 @@ import androidx.navigation.NavController
 import com.example.helptataapp.viewmodel.RegisterViewModel
 
 @Composable
-fun NombreScreen(
+fun PNombreScreen(
 
     navController: NavController,
     viewModel: RegisterViewModel
@@ -38,7 +38,7 @@ fun NombreScreen(
 
         Text(
 
-            text = "Ingrese su nombre",
+            text = "Ingrese su primer nombre",
 
             style =
                 MaterialTheme
@@ -84,7 +84,7 @@ fun NombreScreen(
             onClick = {
 
                 navController.navigate(
-                    "apellido"
+                    "snombre"
                 )
 
             },
