@@ -14,7 +14,6 @@ interface ApiService {
         @Body usuario: UsuarioRequest
 
 
-
     ): Response<UsuarioRequest>
 
 }

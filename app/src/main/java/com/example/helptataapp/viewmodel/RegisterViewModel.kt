@@ -1,5 +1,6 @@
 package com.example.helptataapp.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.helptataapp.model.UsuarioRequest
@@ -9,16 +10,43 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
 class RegisterViewModel : ViewModel() {
 
     private val repository =
         UsuarioRepository()
 
-    private val _mensaje =
-        MutableStateFlow("")
+    var run_usuario =
+        mutableStateOf("")
 
-    val mensaje: StateFlow<String> =
-        _mensaje
+    var dvrun_usuario =
+        mutableStateOf("")
+
+    var pnombre_usuario =
+        mutableStateOf("")
+
+    var snombre_usuario =
+        mutableStateOf("")
+
+    var papellido_usuario =
+        mutableStateOf("")
+
+    var sapellido_usuario =
+        mutableStateOf("")
+
+    var fecha_nac_usuario =
+        mutableStateOf("")
+
+    var telefono_usuario =
+        mutableStateOf("")
+
+    var password_usuario =
+        mutableStateOf("")
+
+    // FUNCIÓN NUEVA
 
     fun registrarUsuario(
         usuario: UsuarioRequest
@@ -28,26 +56,14 @@ class RegisterViewModel : ViewModel() {
 
             try {
 
-                val response =
-                    repository
-                        .registrarUsuario(usuario)
-
-                if (response.isSuccessful) {
-
-                    _mensaje.value =
-                        "Usuario registrado"
-
-                } else {
-
-                    _mensaje.value =
-                        "Error ${response.code()}"
-
-                }
+                repository
+                    .registrarUsuario(
+                        usuario
+                    )
 
             } catch (e: Exception) {
 
-                _mensaje.value =
-                    e.message ?: "Error desconocido"
+                e.printStackTrace()
 
             }
 
