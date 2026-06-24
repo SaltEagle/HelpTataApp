@@ -1,106 +1,71 @@
 package com.example.helptataapp.navegation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.helptataapp.ui.components.*
+import com.example.helptataapp.ui.theme.*
 import com.example.helptataapp.viewmodel.RegisterViewModel
-
 
 @Composable
 fun DvRunScreen(
-
     navController: NavController,
     viewModel: RegisterViewModel
-
 ) {
+    var error by remember { mutableStateOf("") }
 
-    Column(
-
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-
-        verticalArrangement =
-            Arrangement.Center
-
-    ) {
-
-        Text(
-
-            text = "Ingrese el dígito verificador",
-
-            style =
-                MaterialTheme
-                    .typography
-                    .headlineMedium
-
-        )
-
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
-
-        OutlinedTextField(
-
-            value =
-                viewModel
-                    .dvrun_usuario
-                    .value,
-
-            onValueChange = {
-
-                viewModel
-                    .dvrun_usuario
-                    .value = it
-
-            },
-
-            label = {
-                Text("DV")
-            },
-
-            modifier =
-                Modifier.fillMaxWidth()
-
-        )
-
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
-
-        Button(
-
-            onClick = {
-
-                navController.navigate(
-                    "pnombre"
-                )
-
-            },
-
-            modifier =
-                Modifier.fillMaxWidth()
-
+    HtFormBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 36.dp)
         ) {
+            HtStepHeader(
+                currentStep = 2,
+                totalSteps  = 7,
+                stepTitle   = "Dígito verificador"
+            )
 
-            Text("Continuar")
+            Text(
+                text  = "Es el número o letra que aparece después del guión en tu RUN. Ejemplo: si tu RUN es 12345678-K, el dígito es K.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = HT_TextMid
+            )
 
+            Spacer(Modifier.height(24.dp))
+
+            HtTextField(
+                value         = viewModel.dvrun_usuario.value,
+                onValueChange = {
+                    if (it.length <= 1) {
+                        viewModel.dvrun_usuario.value = it.uppercase()
+                        if (error.isNotEmpty()) error = ""
+                    }
+                },
+                label        = "Dígito verificador",
+                placeholder  = "Ej: K o 9",
+                errorMessage = error
+            )
+
+            Spacer(Modifier.height(32.dp))
+
+            HtPrimaryButton(
+                text    = "Continuar →",
+                onClick = {
+                    if (viewModel.dvrun_usuario.value.isBlank()) {
+                        error = "Por favor ingresa el dígito verificador."
+                    } else {
+                        navController.navigate("nombre")
+                    }
+                }
+            )
         }
-
     }
-
 }

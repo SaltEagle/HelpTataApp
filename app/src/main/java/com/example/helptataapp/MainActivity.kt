@@ -4,143 +4,86 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.helptataapp.navegation.ApellidoMScreen
-import com.example.helptataapp.navegation.ApellidoPScreen
-import com.example.helptataapp.navegation.DvRunScreen
-import com.example.helptataapp.navegation.FechaScreen
-import com.example.helptataapp.navegation.PNombreScreen
-import com.example.helptataapp.navegation.PasswordScreen
-import com.example.helptataapp.navegation.RunScreen
-import com.example.helptataapp.navegation.SNombreScreen
-import com.example.helptataapp.navegation.TelefonoScreen
+import com.example.helptataapp.navegation.*
 import com.example.helptataapp.ui.theme.HelpTataAppTheme
 import com.example.helptataapp.viewmodel.RegisterViewModel
 
+/*
+ * MainActivity
+ *
+ * Cambios respecto al original:
+ *  • startDestination cambiado de "run" a "welcome"
+ *    → El flujo ahora empieza en la pantalla de bienvenida
+ *  • Se agrega la ruta "welcome" → WelcomeScreen
+ *  • Se agrega la ruta "login"   → LoginScreen
+ *  • enableEdgeToEdge() activado → la app usa toda la pantalla (mejor en móviles)
+ *  • Todo envuelto en HelpTataAppTheme → aplica colores y tipografía HelpTata
+ *
+ * Flujo de navegación:
+ *   welcome → login (si ya tiene cuenta)
+ *   welcome → run → dvrun → nombre → apellido → fecha → telefono → password
+ */
 class MainActivity : ComponentActivity() {
 
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
-
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        enableEdgeToEdge()   // pantalla completa, sin barras del sistema visibles
+
         setContent {
+            HelpTataAppTheme {
 
-            val navController =
-                rememberNavController()
+                val navController = rememberNavController()
+                val viewModel: RegisterViewModel = viewModel()
 
-            val viewModel:
-                    RegisterViewModel =
-                viewModel()
+                NavHost(
+                    navController    = navController,
+                    startDestination = "welcome"      // ← punto de entrada
+                ) {
 
-            NavHost(
+                    // ── Pantallas nuevas ────────────────────────────────
+                    composable("welcome") {
+                        WelcomeScreen(navController)
+                    }
 
-                navController =
-                    navController,
+                    composable("login") {
+                        LoginScreen(navController)
+                    }
 
-                startDestination =
-                    "run"
+                    // ── Flujo de registro (7 pasos) ─────────────────────
+                    composable("run") {
+                        RunScreen(navController, viewModel)
+                    }
 
-            ) {
+                    composable("dvrun") {
+                        DvRunScreen(navController, viewModel)
+                    }
 
-                composable("run") {
+                    composable("nombre") {
+                        NombreScreen(navController, viewModel)
+                    }
 
-                    RunScreen(
-                        navController,
-                        viewModel
-                    )
+                    composable("apellido") {
+                        ApellidoScreen(navController, viewModel)
+                    }
 
+                    composable("fecha") {
+                        FechaScreen(navController, viewModel)
+                    }
+
+                    composable("telefono") {
+                        TelefonoScreen(navController, viewModel)
+                    }
+
+                    composable("password") {
+                        PasswordScreen(viewModel)
+                    }
                 }
-
-
-                composable("dvrun") {
-
-                    DvRunScreen(
-                        navController,
-                        viewModel
-                    )
-
-                }
-
-                composable("pnombre") {
-
-                    PNombreScreen(
-                        navController,
-                        viewModel
-                    )
-
-                }
-
-
-                composable("snombre") {
-
-                    SNombreScreen(
-                        navController,
-                        viewModel
-                    )
-
-                }
-
-                composable("apellidop") {
-
-                    ApellidoPScreen(
-                        navController,
-                        viewModel
-                    )
-
-                }
-
-
-                composable("apellidom") {
-
-                    ApellidoMScreen(
-                        navController,
-                        viewModel
-                    )
-
-                }
-
-                composable("fecha") {
-
-                    FechaScreen(
-                        navController,
-                        viewModel
-                    )
-
-                }
-
-                composable("telefono") {
-
-                    TelefonoScreen(
-                        navController,
-                        viewModel
-                    )
-
-                }
-
-                composable("password") {
-
-                    PasswordScreen(
-                        viewModel
-                    )
-
-                }
-
             }
-
         }
-
     }
-
 }
