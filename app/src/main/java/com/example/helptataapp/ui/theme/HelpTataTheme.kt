@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.Color
 val HT_Navy        = Color(0xFF1A3A6C)   // Azul marino principal
 val HT_NavyDark    = Color(0xFF0F2548)   // Azul marino oscuro (hover / pressed)
 val HT_NavyLight   = Color(0xFFEEF4FF)   // Azul muy claro (fondos de campos)
-val HT_Amber       = Color(0xFFF4A732)   // Ámbar — CTA principal
-val HT_AmberDark   = Color(0xFFE69920)   // Ámbar oscuro (pressed)
+val HT_Amber       = Color(0xFFCBDFFF)   // Ámbar — CTA principal
+val HT_AmberDark   = Color(0xFF547EC4)   // Ámbar oscuro (pressed)
 val HT_Cream       = Color(0xFFF5F3EF)   // Fondo general
 val HT_White       = Color(0xFFFFFFFF)
 val HT_TextMain    = Color(0xFF1A1A2E)   // Texto principal
