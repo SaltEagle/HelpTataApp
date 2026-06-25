@@ -13,26 +13,22 @@ import com.example.helptataapp.ui.theme.HelpTataAppTheme
 import com.example.helptataapp.viewmodel.RegisterViewModel
 
 /*
- * MainActivity
+ * MainActivity  —  Flujo de registro con correo electrónico
  *
- * Cambios respecto al original:
- *  • startDestination cambiado de "run" a "welcome"
- *    → El flujo ahora empieza en la pantalla de bienvenida
- *  • Se agrega la ruta "welcome" → WelcomeScreen
- *  • Se agrega la ruta "login"   → LoginScreen
- *  • enableEdgeToEdge() activado → la app usa toda la pantalla (mejor en móviles)
- *  • Todo envuelto en HelpTataAppTheme → aplica colores y tipografía HelpTata
- *
- * Flujo de navegación:
- *   welcome → login (si ya tiene cuenta)
- *   welcome → run → dvrun → nombre → apellido → fecha → telefono → password
+ * Flujo completo (7 pasos):
+ *   1. run      → RUT completo (formato automático + validación módulo 11)
+ *   2. nombre   → Primer y segundo nombre (solo letras)
+ *   3. apellido → Primer y segundo apellido (solo letras)
+ *   4. fecha    → Fecha de nacimiento (calendario, desde 1900, mín. 18 años)
+ *   5. telefono → Celular chileno (9 dígitos, empieza en 9)
+ *   6. correo   → Correo electrónico (validación + confirmación) ← NUEVO
+ *   7. password → Contraseña (confirmación + medidor de fortaleza)
  */
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        enableEdgeToEdge()   // pantalla completa, sin barras del sistema visibles
+        enableEdgeToEdge()
 
         setContent {
             HelpTataAppTheme {
@@ -42,10 +38,10 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController    = navController,
-                    startDestination = "welcome"      // ← punto de entrada
+                    startDestination = "welcome"
                 ) {
 
-                    // ── Pantallas nuevas ────────────────────────────────
+                    // ── Pantallas de inicio ─────────────────────────────
                     composable("welcome") {
                         WelcomeScreen(navController)
                     }
@@ -55,30 +51,38 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // ── Flujo de registro (7 pasos) ─────────────────────
+
+                    // Paso 1: RUT completo
                     composable("run") {
                         RunScreen(navController, viewModel)
                     }
 
-                    composable("dvrun") {
-                        DvRunScreen(navController, viewModel)
-                    }
-
+                    // Paso 2: Nombre
                     composable("nombre") {
                         NombreScreen(navController, viewModel)
                     }
 
+                    // Paso 3: Apellido
                     composable("apellido") {
                         ApellidoScreen(navController, viewModel)
                     }
 
+                    // Paso 4: Fecha de nacimiento
                     composable("fecha") {
                         FechaScreen(navController, viewModel)
                     }
 
+                    // Paso 5: Teléfono
                     composable("telefono") {
                         TelefonoScreen(navController, viewModel)
                     }
 
+                    // Paso 6: Correo electrónico
+                    composable("correo") {
+                        CorreoScreen(navController, viewModel)
+                    }
+
+                    // Paso 7: Contraseña (llama a la API)
                     composable("password") {
                         PasswordScreen(viewModel)
                     }

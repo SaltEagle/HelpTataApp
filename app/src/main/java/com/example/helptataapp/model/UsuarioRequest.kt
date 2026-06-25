@@ -15,7 +15,12 @@ data class UsuarioRequest(
 
     val telefono_usuario: Int,
 
+    val correo_usuario: String,
+
     val password_usuario: String,
+
+
+
 
 
 )

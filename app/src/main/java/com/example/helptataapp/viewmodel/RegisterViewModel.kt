@@ -46,6 +46,9 @@ class RegisterViewModel : ViewModel() {
     var password_usuario =
         mutableStateOf("")
 
+    var correo_usuario =
+        mutableStateOf("")
+
     // FUNCIÓN NUEVA
 
     fun registrarUsuario(

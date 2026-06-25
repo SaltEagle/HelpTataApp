@@ -119,15 +119,15 @@ fun LoginScreen(
                         style = MaterialTheme.typography.headlineLarge
                     )
 
-                    // Campo RUN / correo
+                    // correo
                     HtTextField(
                         value         = identificacion,
                         onValueChange = {
                             identificacion = it
                             if (idError.isNotEmpty()) idError = ""
                         },
-                        label         = "RUN o Correo Electrónico",
-                        placeholder   = "12345678-9 o tu@email.com",
+                        label         = "Correo Electrónico",
+                        placeholder   = "tu@email.com",
                         errorMessage  = idError,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email
