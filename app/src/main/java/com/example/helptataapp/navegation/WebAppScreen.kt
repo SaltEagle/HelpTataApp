@@ -23,7 +23,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.helptataapp.session.AppSession
 import com.example.helptataapp.session.TokenStore
 
-private const val BASE_WEB_URL = "http://helptata.cl:5000"
+private const val BASE_WEB_URL = "https://helptata.cl"
 
 private class AndroidBridge(private val ctx: Context, private val onLogout: () -> Unit) {
     @JavascriptInterface
