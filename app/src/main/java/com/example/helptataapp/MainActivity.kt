@@ -4,11 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.helptataapp.navegation.*
+import com.example.helptataapp.session.AppSession
+import com.example.helptataapp.session.TokenStore
 import com.example.helptataapp.ui.theme.HelpTataAppTheme
 import com.example.helptataapp.viewmodel.RegisterViewModel
 
@@ -35,10 +39,22 @@ class MainActivity : ComponentActivity() {
 
                 val navController = rememberNavController()
                 val viewModel: RegisterViewModel = viewModel()
+                val ctx = LocalContext.current
+
+                // Restaurar sesión cifrada si existe; sin token → login directo
+                val startDestination = remember {
+                    val saved = TokenStore.load(ctx)
+                    if (saved.isNotBlank()) {
+                        AppSession.token = saved
+                        "webview"
+                    } else {
+                        "login"
+                    }
+                }
 
                 NavHost(
                     navController    = navController,
-                    startDestination = "welcome"
+                    startDestination = startDestination
                 ) {
 
                     // ── Pantallas de inicio ─────────────────────────────
@@ -84,7 +100,18 @@ class MainActivity : ComponentActivity() {
 
                     // Paso 7: Contraseña (llama a la API)
                     composable("password") {
-                        PasswordScreen(viewModel)
+                        PasswordScreen(navController, viewModel)
+                    }
+
+                    // Web app embebida (post-login)
+                    composable("webview") {
+                        WebAppScreen(
+                            onLogout = {
+                                navController.navigate("login") {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                        )
                     }
                 }
             }

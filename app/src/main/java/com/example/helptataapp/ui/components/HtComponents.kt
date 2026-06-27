@@ -178,7 +178,8 @@ fun HtTextField(
     errorMessage: String = "",
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     val hasError = errorMessage.isNotEmpty()
 
@@ -189,7 +190,7 @@ fun HtTextField(
             label               = {
                 Text(
                     text  = label,
-                    fontSize = 18.sp   // etiqueta grande
+                    fontSize = 18.sp
                 )
             },
             placeholder         = if (placeholder.isNotEmpty()) {
@@ -208,6 +209,7 @@ fun HtTextField(
             keyboardOptions     = keyboardOptions,
             visualTransformation = visualTransformation,
             singleLine          = singleLine,
+            trailingIcon        = trailingIcon,
             shape               = RoundedCornerShape(12.dp),
             modifier            = Modifier
                 .fillMaxWidth()
