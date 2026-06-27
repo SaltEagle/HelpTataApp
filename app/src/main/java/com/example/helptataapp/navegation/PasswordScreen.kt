@@ -26,7 +26,10 @@ import androidx.navigation.NavController
 import com.example.helptataapp.model.UsuarioRequest
 import com.example.helptataapp.ui.components.*
 import com.example.helptataapp.ui.theme.*
+import com.example.helptataapp.session.AppSession
+import com.example.helptataapp.session.TokenStore
 import com.example.helptataapp.util.*
+import com.example.helptataapp.viewmodel.RegisterState
 import com.example.helptataapp.viewmodel.RegisterViewModel
 
 /*
@@ -58,15 +61,45 @@ import com.example.helptataapp.viewmodel.RegisterViewModel
  */
 @Composable
 fun PasswordScreen(
+    navController: NavController,
     viewModel: RegisterViewModel
 ) {
-    val context = LocalContext.current
+    val context      = LocalContext.current
+    val registerState by viewModel.state.collectAsState()
 
     var errorPass    by remember { mutableStateOf("") }
     var errorConfirm by remember { mutableStateOf("") }
     var confirmPass  by remember { mutableStateOf("") }
     var showPass     by remember { mutableStateOf(false) }
     var showConfirm  by remember { mutableStateOf(false) }
+
+    // Reaccionar a los estados de registro
+    LaunchedEffect(registerState) {
+        when (registerState) {
+            is RegisterState.SuccessWithToken -> {
+                val token = (registerState as RegisterState.SuccessWithToken).token
+                if (token.isNotBlank()) {
+                    AppSession.token = token
+                    TokenStore.save(context, token)
+                    Toast.makeText(context, "¡Cuenta creada! Sesión iniciada correctamente.", Toast.LENGTH_LONG).show()
+                    navController.navigate("webview") {
+                        popUpTo("welcome") { inclusive = false }
+                    }
+                } else {
+                    Toast.makeText(context, "¡Cuenta creada! Inicia sesión para continuar.", Toast.LENGTH_LONG).show()
+                    navController.navigate("login") {
+                        popUpTo("welcome") { inclusive = false }
+                    }
+                }
+            }
+            is RegisterState.Error -> {
+                Toast.makeText(context, (registerState as RegisterState.Error).mensaje, Toast.LENGTH_LONG).show()
+            }
+            else -> {}
+        }
+    }
+
+    val isLoading = registerState is RegisterState.Loading
 
     // Fortaleza en tiempo real
     val fortaleza = remember(viewModel.password_usuario.value) {
@@ -146,7 +179,8 @@ fun PasswordScreen(
             Spacer(Modifier.height(32.dp))
 
             HtPrimaryButton(
-                text    = "Finalizar registro",
+                text    = if (isLoading) "Creando cuenta…" else "Finalizar registro",
+                enabled = !isLoading,
                 onClick = {
                     var ok = true
 
@@ -164,17 +198,15 @@ fun PasswordScreen(
                             run_usuario       = viewModel.run_usuario.value,
                             dvrun_usuario     = viewModel.dvrun_usuario.value,
                             pnombre_usuario   = viewModel.pnombre_usuario.value,
-                            snombre_usuario   = viewModel.snombre_usuario.value,
+                            snombre_usuario   = viewModel.snombre_usuario.value.ifBlank { null },
                             papellido_usuario = viewModel.papellido_usuario.value,
-                            sapellido_usuario = viewModel.sapellido_usuario.value,
+                            sapellido_usuario = viewModel.sapellido_usuario.value.ifBlank { null },
                             fecha_nac_usuario = viewModel.fecha_nac_usuario.value,
-                            telefono_usuario  = viewModel.telefono_usuario.value.toInt(),
-                            correo_usuario = viewModel.correo_usuario.value,
-                            password_usuario  = viewModel.password_usuario.value
-
+                            telefono_usuario  = "+56${viewModel.telefono_usuario.value}",
+                            password_usuario  = viewModel.password_usuario.value,
+                            id_direccion      = 1
                         )
-                        viewModel.registrarUsuario(usuario)
-                        Toast.makeText(context, "Registrando usuario…", Toast.LENGTH_LONG).show()
+                        viewModel.registrarUsuario(usuario, viewModel.correo_usuario.value)
                     }
                 }
             )

@@ -25,25 +25,20 @@ package com.example.helptataapp.util
  *  4. Une con guión
  */
 fun formatearRut(raw: String): String {
-    // Solo dígitos y K
     val limpio = raw.uppercase().filter { it.isDigit() || it == 'K' }
     if (limpio.isEmpty()) return ""
 
-    // Si solo hay 1-2 chars no formateamos todavía
-    if (limpio.length <= 7) return limpio
-
-    // El dígito verificador siempre es el último char
-    val dv    = limpio.last().toString()
-    val cuerpo = limpio.dropLast(1)
-
-    // Agregar puntos cada 3 dígitos de derecha a izquierda
-    val conPuntos = cuerpo
-        .reversed()
-        .chunked(3)
-        .joinToString(".")
-        .reversed()
-
-    return "$conPuntos-$dv"
+    return if (limpio.length >= 8) {
+        // Ya tiene body + DV → poner guión antes del último char
+        val dv = limpio.last().toString()
+        val cuerpo = limpio.dropLast(1)
+        val conPuntos = cuerpo.reversed().chunked(3).joinToString(".").reversed()
+        "$conPuntos-$dv"
+    } else {
+        // Formateo progresivo del cuerpo (DV aún no ingresado)
+        // "1234" → "1.234",  "12345" → "12.345",  "1234567" → "1.234.567"
+        limpio.reversed().chunked(3).joinToString(".").reversed()
+    }
 }
 
 /**

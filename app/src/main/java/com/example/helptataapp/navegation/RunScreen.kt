@@ -6,12 +6,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,14 +61,14 @@ fun RunScreen(
     navController: NavController,
     viewModel: RegisterViewModel
 ) {
-    // El campo muestra el RUT formateado; el estado interno guarda el raw
-    var rutDisplay by remember { mutableStateOf("") }
+    // TextFieldValue permite controlar texto Y posición del cursor juntos
+    var rutDisplay by remember { mutableStateOf(TextFieldValue("")) }
     var error      by remember { mutableStateOf("") }
 
     // Estado de validación en tiempo real (null = sin validar aún)
-    val rutValido: Boolean? = remember(rutDisplay) {
-        val clean = rutDisplay.filter { it.isDigit() || it == 'K' || it == 'k' }
-        if (clean.length >= 8) validarRut(rutDisplay) else null
+    val rutValido: Boolean? = remember(rutDisplay.text) {
+        val clean = rutDisplay.text.filter { it.isDigit() || it == 'K' || it == 'k' }
+        if (clean.length >= 8) validarRut(rutDisplay.text) else null
     }
 
     HtFormBackground {
@@ -105,12 +108,15 @@ fun RunScreen(
             // ── Campo de RUT con formato automático ─────────────────────
             OutlinedTextField(
                 value         = rutDisplay,
-                onValueChange = { input ->
-                    // Solo permitir dígitos y K
-                    val filtrado = input.uppercase().filter { it.isDigit() || it == 'K' }
-                    // Limitar a 9 chars del RUT limpio (8 dígitos + 1 DV)
+                onValueChange = { tfv ->
+                    val filtrado = tfv.text.uppercase().filter { it.isDigit() || it == 'K' }
                     val limitado = filtrado.take(9)
-                    rutDisplay = formatearRut(limitado)
+                    val formatted = formatearRut(limitado)
+                    // Cursor siempre al final — evita el salto de posición al insertar puntos
+                    rutDisplay = TextFieldValue(
+                        text      = formatted,
+                        selection = TextRange(formatted.length)
+                    )
                     if (error.isNotEmpty()) error = ""
                 },
                 label    = { Text("RUT", fontSize = 18.sp) },
@@ -127,7 +133,7 @@ fun RunScreen(
                         null  -> {}
                     }
                 },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii),
                 singleLine      = true,
                 shape           = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
                 modifier        = Modifier
@@ -145,7 +151,7 @@ fun RunScreen(
             )
 
             // Mensaje de ayuda bajo el campo (cuando el RUT es inválido en tiempo real)
-            if (rutValido == false && error.isEmpty()) {
+            if (rutValido == false && error.isEmpty() && rutDisplay.text.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text  = "El dígito verificador no coincide con el RUT.",
@@ -160,16 +166,15 @@ fun RunScreen(
                 text    = "Continuar →",
                 onClick = {
                     when {
-                        rutDisplay.isBlank() -> {
+                        rutDisplay.text.isBlank() -> {
                             error = "Por favor ingresa tu RUT."
                         }
                         rutValido != true -> {
                             error = "El RUT ingresado no es válido. Revisa el dígito verificador."
                         }
                         else -> {
-                            // Guardar cuerpo y DV por separado en el ViewModel
-                            viewModel.run_usuario.value    = rutSinFormato(rutDisplay)
-                            viewModel.dvrun_usuario.value  = dvDeRut(rutDisplay)
+                            viewModel.run_usuario.value   = rutSinFormato(rutDisplay.text)
+                            viewModel.dvrun_usuario.value = dvDeRut(rutDisplay.text)
                             navController.navigate("nombre")
                         }
                     }
@@ -184,6 +189,37 @@ fun RunScreen(
                 style = MaterialTheme.typography.labelMedium,
                 color = HT_TextMuted
             )
+
+            Spacer(Modifier.height(24.dp))
+
+            // Link a inicio de sesión
+            Row(
+                modifier              = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment     = Alignment.CenterVertically
+            ) {
+                Text(
+                    text  = "¿Ya tienes cuenta? ",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = HT_TextMid
+                )
+                TextButton(
+                    onClick        = {
+                        navController.navigate("login") {
+                            popUpTo("run") { inclusive = true }
+                        }
+                    },
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(
+                        text  = "Inicia sesión aquí",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color      = HT_Navy,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+            }
         }
     }
 }
