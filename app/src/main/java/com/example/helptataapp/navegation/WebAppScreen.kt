@@ -68,7 +68,6 @@ fun WebAppScreen(onLogout: () -> Unit) {
                     override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                         customView = view
                         customViewCallback = callback
-                        // Forzar paisaje para pantalla completa
                         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         val decor = activity?.window?.decorView as? FrameLayout
                         decor?.addView(
@@ -79,6 +78,17 @@ fun WebAppScreen(onLogout: () -> Unit) {
                             )
                         )
                         view.visibility = View.VISIBLE
+                        // Modo inmersivo: oculta nav bar y status bar
+                        // Aparecen al deslizar desde el borde y se ocultan solos
+                        @Suppress("DEPRECATION")
+                        activity?.window?.decorView?.systemUiVisibility = (
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        )
                     }
 
                     override fun onHideCustomView() {
@@ -86,8 +96,10 @@ fun WebAppScreen(onLogout: () -> Unit) {
                         decor?.removeView(customView)
                         customView = null
                         customViewCallback = null
-                        // Volver a portrait
                         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        // Restaurar UI normal al salir de pantalla completa
+                        @Suppress("DEPRECATION")
+                        activity?.window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
                     }
                 }
                 loadUrl(url)
